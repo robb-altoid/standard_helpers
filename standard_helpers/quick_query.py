@@ -1,11 +1,3 @@
-# Have to install these in the calling notebook for the functions to work
-#
-# try:
-#     __import__("databricks-sql-connector")
-# except ImportError:
-#   ! pip install databricks-sql-connector
-  
-
 from typing import Union
 from databricks import sql
 from pyspark.shell import spark
