@@ -23,7 +23,7 @@ def get_serverless_query(conn_info: dict, q: str, return_result: bool = True, re
 
     Args:
     conn_info: dict
-        pass the necessary information to connect to the speedy sql endpoint. library keys:
+        pass the necessary information to connect to the speedy sql endpoint. dict keys:
             server_hostname
             http_path
             access_token
