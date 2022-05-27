@@ -7,7 +7,6 @@
   
 
 from typing import Union
-from pyspark.sql import functions as F
 from databricks import sql
 from pyspark.shell import spark
 import pandas as pd
