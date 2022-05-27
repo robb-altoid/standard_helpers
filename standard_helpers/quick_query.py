@@ -1,9 +1,9 @@
 # Have to install these in the calling notebook for the functions to work
 #
-try:
-    __import__("databricks-sql-connector")
-except ImportError:
-  ! pip install databricks-sql-connector
+# try:
+#     __import__("databricks-sql-connector")
+# except ImportError:
+#   ! pip install databricks-sql-connector
   
 
 from typing import Union
