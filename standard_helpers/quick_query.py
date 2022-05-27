@@ -1,14 +1,10 @@
 # Have to install these in the calling notebook for the functions to work
 #
-# try:
-#     __import__("databricks-sql-connector")
-# except ImportError:
-#   ! pip install databricks-sql-connector
+try:
+    __import__("databricks-sql-connector")
+except ImportError:
+  ! pip install databricks-sql-connector
   
-# try:
-#     __import__("tqdm")
-# except ImportError:
-#   ! pip install tqdm
 
 from typing import Union
 from pyspark.sql import functions as F
