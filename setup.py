@@ -16,5 +16,5 @@ setuptools.setup(
     },
     license='MIT',
     packages=['standard_helpers'],
-    install_requires=['typing','pyspark','pandas'],
+    install_requires=['databricks','typing','pyspark','pandas'],
 )
