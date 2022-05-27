@@ -10,6 +10,14 @@ try:
 except ImportError:
     ! pip install databricks-sql-connector
 ```
+- pip install the package with:
+```python
+pip install git+https://github.com/robb-altoid/standard_helpers
+```
+- import the quick_query module with:
+```python
+from standard_helpers import quick_query as qq
+```
 
 for some reason (in my environment), converting data from a spark df to a pandas df won't work if spark arrow has been enabled.
 I got instructions for enabling/disabling spark arrow from [here](https://george-jen.gitbook.io/data-science-and-apache-spark/enabling-for-conversion-to-from-pandas)
