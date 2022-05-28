@@ -89,14 +89,17 @@ def create_table_from_sdf(db_and_tbl_name, sdf_to_convert):
     sdf_to_convert.write.mode('overwrite').saveAsTable(f'{db_and_tbl_name}')
       
 
-def run_qry_n_create_tbl(qry:str, db_n_tbl_name:str):
+def run_qry_n_create_tbl(conn_info: dict, qry:str, db_n_tbl_name:str):
     """
     stiches together the get_serverless_qry and create_tbl_from_spd functions. input the query string
     and the name of the database.table that you want the data stored in. the functions will run the query
     and create the table. the function returns the spark.dataframe
 
     Args:
-    qry:str
+    conn_info: dict
+        the server connection info need to pass to the get_serverless_query function
+
+    qry: str
         the query to generate the desired data
 
     db_n_tbl_name:str
@@ -106,7 +109,7 @@ def run_qry_n_create_tbl(qry:str, db_n_tbl_name:str):
     Returns:
         nothing
     """
-    resultant_sdf = get_serverless_query(qry)
+    resultant_sdf = get_serverless_query(conn_info, qry)
     create_table_from_sdf(db_n_tbl_name, resultant_sdf)
     return
   
