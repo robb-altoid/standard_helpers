@@ -1,4 +1,4 @@
-from atlas_api.base_atlas_api import BaseAtlasAPI
+from atlas_api_components.base_atlas_api import BaseAtlasAPI
 import traceback
 
 
