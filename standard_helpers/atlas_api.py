@@ -1,4 +1,4 @@
-from utils.api.base_atlas_api import BaseAtlasAPI
+from base_atlas_api import BaseAtlasAPI
 import traceback
 
 

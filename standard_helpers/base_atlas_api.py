@@ -1,8 +1,8 @@
 import pycountry
 import requests
 import traceback
-from utils.api.atlas_api_constants import AtlasAPIConstants
-from utils.api.atlas_api_exception import AtlasAPIException
+from atlas_api_constants import AtlasAPIConstants
+from atlas_api_exception import AtlasAPIException
 
 # TODO: wire this up to packaging
 VERSION = "0.0.1"
