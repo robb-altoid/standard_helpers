@@ -172,7 +172,7 @@ def convert_pdf_to_db_tbl(conn_info, db_name, project_abbrv, tbl_unique_name, pd
 
     # drop the table if it already exists - the overwrite function below should do this but it fails sometimes for some reason
     q_drop_tbl = f"DROP TABLE IF EXISTS {db_und_tabellenname};"
-    qq.get_serverless_query(conn_info, q_drop_tbl, return_result=False)
+    get_serverless_query(conn_info, q_drop_tbl, return_result=False)
 
     # convert the pdf to an sdf
     sdf = spark.createDataFrame(pdf)
