@@ -1,4 +1,5 @@
 from googletrans import Translator
+import time
 
 def trans_text(input_text:str):
     """
