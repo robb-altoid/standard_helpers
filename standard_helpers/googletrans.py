@@ -1,5 +1,6 @@
 from googletrans import Translator
 import time
+import random
 
 def trans_text(input_text:str):
     """
@@ -19,7 +20,7 @@ def trans_text(input_text:str):
     translator = Translator()
     time.sleep(random.randrange(2, 5))  # attempt to resolve the HTTP 429 error - too many requests
     try:
-        translated_text = translator.translate(text, dest='en')  # let Google Translate determine the input language so it will work on many languages -> English output
+        translated_text = translator.translate(input_text, dest='en')  # let Google Translate determine the input language so it will work on many languages -> English output
         return translated_text.text
     except:
         translated_text = 'nothing returned from translation function'
