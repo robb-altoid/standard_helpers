@@ -1,6 +1,7 @@
 import pycountry
 import requests
 import traceback
+import json
 
 
 ####### from atlas_api_constants.py ########
@@ -474,9 +475,29 @@ class BaseAtlasAPI:
 
         return self._make_get_request(f"search/company", params=params)
 
-    def post_search_company(self):
-        # TODO: What is this endpoint
-        raise NotImplementedError("post_search_company not yet implemented")
+    def post_search_company(self, company_name: str, page: int = 0):
+        # https://demo.altana.ai/atlas/ui/#/V3%20Search/post_search_company_v3
+        body_post_search_company = {
+                    "search_filters": {
+                        "boolean_operator": "AND",
+                        "filter_list": [
+                        {
+                            "operator": "token",
+                            "target": "company_name",
+                            "value": company_name
+                        }
+                        ]
+                    }
+                }
+        headers={}
+        headers.update(self.headers)
+        headers.update({
+                            "accept": "application/json",
+                            "Content-Type": "application/json",
+                        })
+        response = requests.post(url=f"{self.host_name}/search/company", headers=headers, data=json.dumps(body_post_search_company))
+        return response.json()
+
 
     def search_facility(self, full_address: str, company_name: str, page: int = 0):
         """
@@ -838,3 +859,6 @@ class AtlasAPI(BaseAtlasAPI):
         return results
 
 
+if __name__ == "__main__":
+    api_call = AtlasAPI("MTpzZWNyZXQlMjBmb3IlMjBzdGFnZToxNjU0MTEzMDgwOjYzOWFmNTM0.YTZkMDlkYzM2ZDU1OGM4MzUxMTFhMGIxZTBhZDE4MTUwNTE5NzUyOA", "https://stage.altana.ai/atlas/public/v3")
+    search_result = api_call.post_search_company("apple")
