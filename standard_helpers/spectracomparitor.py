@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.metrics.pairwise import cosine_similarity
 
 # package the function to generate hs spectra data pivot tables
 def convert_to_spectral(input_df, pov_name_column, pivot_column, counting_column='transaction_id'):
