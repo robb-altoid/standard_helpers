@@ -1,3 +1,5 @@
+import pandas as pd
+
 # package the function to generate hs spectra data pivot tables
 def convert_to_spectral(input_df, pov_name_column, pivot_column, counting_column='transaction_id'):
     """ The input_df should be an extract from either d.tt or akd2.fste. The input data must include the following columns:
