@@ -2,13 +2,38 @@ import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 
 # package the function to generate hs spectra data pivot tables
-def convert_to_spectral(input_df, pov_name_column, pivot_column, counting_column='transaction_id'):
-    """ The input_df should be an extract from either d.tt or akd2.fste. The input data must include the following columns:
-            - pov_name_column -  the column with the name or address of either the receiver or sender that will be the grouping index
-            - pivot_column    -  the column whose values will become the columns in the pivot table (generally either hs2 or hs6)
-            - counting_column -  a column that's guaranteed to have data in it so that it can be counted, such as "transaction_id" 
-                                 in either akd2.fste or d.tt
-        The user needs to remove any unwanted rows before calling this function on their data. 
+def convert_to_spectral(input_df: pd.DataFrame, 
+                        pov_name_column: str, 
+                        pivot_column: str, 
+                        counting_column: str = 'transaction_id',
+) -> pd.DataFrame:
+    """ 
+    This function outputs a pandas dataframe (df) with Harmonized Shipping Code (HS) spectral data from a df with 
+    transaction data. 
+
+    An HS spectrum is a count of the number of shipments in each HS category that were sent or received by a company in 
+    the list of transactions. The spectra can be generated from either shipping or receiving data. The input df should 
+    have transaction data from either default.transaction_table21 (d.tt21) or atlas_kg_db_21.facility_sends_to_edge 
+    (akd21.fste). 
+
+    Args:
+        input_df:   An extract from either d.tt or akd2.fste. The input data must include only the following columns:
+                        -   pov_name_column: the column with the name or address of either the receiver or sender that 
+                            will be the grouping index
+                        -   pivot_column: the column whose values will become the columns in the pivot table (generally 
+                            either hs2 or hs6)
+                        -   counting_column: a column that's guaranteed to have data in it so that it can be counted, 
+                            such as "transaction_id" in either akd2.fste or d.tt
+
+        pov_name_column:    The name of the column that will become the rows in the pivot_df
+
+        pivot_column:       The name of the column whose values will become the row names in the pivot_df
+
+        counting_column:    The column that will be counted to generate the number of transactions in each HS category
+
+    Returns:
+        pivot_df:   The spectral data for each company with HS categories as columns and company names as the row 
+                    indicies
     """
    
     pivot_df = (input_df[[pov_name_column, pivot_column, counting_column]]
@@ -31,39 +56,41 @@ def hs_spectra_comparator(know_actors_transactions_df: pd.DataFrame,
     """
     This function performs a pairwise cosine similarity comparison and spectral identify of the vectors of HS spectra
     from a target population to a candidate population. The function then adds additional statistics to output a 
-    pandas dataframe that is directly relevant for an analyst trying to determine if any company in a candidate population
-    is sending or receiving similar HS goods. The function can compare any level of HS code (2,4,6), the desired comparison
-    value has to be part of the input dataframes. The function returns a pandas dataframe with the result of each comparison
-    and the additional statistics.
+    pandas dataframe that is directly relevant for an analyst trying to determine if any company in a candidate 
+    population is sending or receiving similar HS goods. The function can compare any level of HS code (2,4,6), the 
+    desired comparison value has to be part of the input dataframes. The function returns a pandas dataframe with the 
+    result of each comparison and the additional statistics.
 
-    inputs:
-        know_actors_transactions_df - a pandas dataframe that contains all of the known actors' transactions from either
+    Args:
+        know_actors_transactions_df: a pandas dataframe that contains all of the known actors' transactions from either
                                       akd21.fste or d.tt. The df must contain a column of hs codes for comparsion (this
                                       should be a substring of the hs_code column in the db to ensure that they are all 
                                       the same lenght - this isn't true yet because I haven't integrated the "convert_to
                                       _spectral" function into this function).
             
-        candidate_pop_transactions_df - a pandas dataframe that contains all of the candidate population's transactions from 
-                                      either akd21.fste or d.tt. The df must contain a column of hs codes for comparsion 
-                                      (this should be a substring of the hs_code column in the db to ensure that they are all 
-                                      the same lenght - this isn't true yet because I haven't integrated the "convert_to
-                                      _spectral" function into this function).
+        candidate_pop_transactions_df:  a pandas dataframe that contains all of the candidate population's transactions
+                                        from either akd21.fste or d.tt. The df must contain a column of hs codes for  
+                                        comparsion (this should be a substring of the hs_code column in the db to ensure
+                                        that they are all the same lenght - this isn't true yet because I haven't
+                                        integrated the "convert_to_spectral" function into this function).
 
-        known_actors_spectra_df - a pandas dataframe of the hs spectra of the known population (of known bad actors for example).
+        known_actors_spectra_df:    a pandas dataframe of the hs spectra of the known population (of known bad actors for 
+                                    example).
 
-        candidate_pop_spectra_df - a pandas dataframe of the hs spectra of the target population (the population where you looking
-                                   to see if any of the members have signatures closely related to the known actors' signatures).
+        candidate_pop_spectra_df:   a pandas dataframe of the hs spectra of the target population (the population where
+                                    you looking to see if any of the members have signatures closely related to the 
+                                    known actors' signatures).
 
-        known_grouping_name - name of the column in know_actors_transactions_df that is either the company name or created
-                              composite (can be either sender or receiver but both this and candidate_pop_grouping_name 
-                              should have the same transaction perspective).
+        known_grouping_name:    name of the column in know_actors_transactions_df that is either the company name or 
+                                created composite (can be either sender or receiver but both this and 
+                                candidate_pop_grouping_name should have the same transaction perspective).
 
-        candidate_pop_grouping_name - name of the column in candidate_pop_transactions_df that is either the company name or created
-                                      composite (can be either sender or receiver but both this and known_grouping_name should
-                                      have the same transaction perspective).
+        candidate_pop_grouping_name:    name of the column in candidate_pop_transactions_df that is either the company
+                                        name or created composite (can be either sender or receiver but both this and 
+                                        known_grouping_name should have the same transaction perspective).
 
-    outputs:
-        kn_to_unk_comparision_df - the pandas dataframe with the pairwise comparisons of each known to each candidate.
+    Returns:
+        kn_to_unk_comparision_df:   the pandas dataframe with the pairwise comparisons of each known to each candidate.
     """
 
     # will use a transfer_df to hold the two spectra that will be compared. need a set of the hs2 columns from both spectra
@@ -90,7 +117,8 @@ def hs_spectra_comparator(know_actors_transactions_df: pd.DataFrame,
             transfer_df = transfer_df.append(row)  
             transfer_df = transfer_df.append(row2)
             transfer_df = transfer_df.fillna(0)
-            # cos_sim returns a matrix. the [0,1] enables gathering the 2nd value in the first array. it's the same thing as doing "matrix[0][1]"
+            # cos_sim returns a matrix. the [0,1] enables gathering the 2nd value in the first array. 
+            # it's the same thing as doing "matrix[0][1]"
             score = cosine_similarity(transfer_df)[0,1]
             transfer_dict = {'left_facility':ind,'right_facility':ind2, 'cos_sim':score}
             kn_to_unk_comparision_df = kn_to_unk_comparision_df.append(transfer_dict, ignore_index=True)
@@ -199,47 +227,55 @@ def comparator_func_train(know_actors_transactions_df: pd.DataFrame,
     hs_spectra_comparator
     
     inputs:
-        know_actors_transactions_df: pd.DataFrame - a pandas dataframe that contains all of the known actors' transactions from 
-                                     either akd21.fste or d.tt. The df must contain a column of hs codes for comparsion (this
-                                     should be a substring of the hs_code column in the db to ensure that they are all 
-                                     the same lenght - this isn't true yet because I haven't integrated the "convert_to
-                                     _spectral" function into this function).
+        know_actors_transactions_df:    pd.DataFrame - a pandas dataframe that contains all of the known actors'  
+                                        transactions from either akd21.fste or d.tt. The df must contain a column of hs 
+                                        codes for comparsion (this should be a substring of the hs_code column in the db
+                                        to ensure that they are all the same lenght - this isn't true yet because I 
+                                        haven't integrated the "convert_to _spectral" function into this function).
             
-        candidate_pop_transactions_df: pd.DataFrame - a pandas dataframe that contains all of the candidate population's transactions  
-                                       from either akd21.fste or d.tt. The df must contain a column of hs codes for comparsion 
-                                       (this should be a substring of the hs_code column in the db to ensure that they are all 
-                                       the same lenght - this isn't true yet because I haven't integrated the "convert_to
-                                       _spectral" function into this function).
+        candidate_pop_transactions_df:  pd.DataFrame - a pandas dataframe that contains all of the candidate   
+                                        population's transactions from either akd21.fste or d.tt. The df must contain a
+                                        column of hs codes for comparsion (this should be a substring of the hs_code 
+                                        column in the db to ensure that they are all the same lenght - this isn't true 
+                                        yet because I haven't integrated the "convert_to_spectral" function into this 
+                                        function).
 
-        known_grouping_name: str - name of the column in know_actors_transactions_df that is either the company name or created
-                             composite (can be either sender or receiver but both this and candidate_pop_grouping_name 
-                             should have the same transaction perspective).
+        known_grouping_name:    str - name of the column in know_actors_transactions_df that is either the company name
+                                or created composite (can be either sender or receiver but both this and 
+                                candidate_pop_grouping_name should have the same transaction perspective).
 
-        candidate_pop_grouping_name: str - name of the column in candidate_pop_transactions_df that is either the company name or 
-                                     created composite (can be either sender or receiver but both this and known_grouping_name should
-                                     have the same transaction perspective).
+        candidate_pop_grouping_name:    str - name of the column in candidate_pop_transactions_df that is either the 
+                                        company name or created composite (can be either sender or receiver but both 
+                                        this and known_grouping_name should have the same transaction perspective).
 
-        known_hs_column_for_pivotting: str = the name of the column in the know_actors_transactions_df that has the hs2 (or hs4 or hs6)
-                                       column that will become the column names in the spectra_df.
+        known_hs_column_for_pivotting:  str = the name of the column in the know_actors_transactions_df that has the hs2
+                                        (or hs4 or hs6) column that will become the column names in the spectra_df.
 
-        candidate_hs_column_for_pivotting: str = the name of the column in the know_actors_transactions_df that has the hs2 (or hs4 or
-                                           hs6) column that will become the column names in the spectra_df.
+        candidate_hs_column_for_pivotting:  the name of the column in the know_actors_transactions_df that has the hs2
+                                            (or hs4 or hs6) column that will become the column names in the spectra_df.
 
 
     outputs:
-        known_actors_spectra_df: pd.DataFrame - a pandas dataframe of the hs spectra of the known population (of known bad actors for example).
+        known_actors_spectra_df:    pd.DataFrame - a pandas dataframe of the hs spectra of the known population (of 
+                                    known bad actors for example).
 
-        candidate_pop_spectra_df: pd.DataFrame - a pandas dataframe of the hs spectra of the target population (the population where you looking
-                                  to see if any of the members have signatures closely related to the known actors' signatures).
+        candidate_pop_spectra_df:   pd.DataFrame - a pandas dataframe of the hs spectra of the target population (the 
+                                    population where you looking to see if any of the members have signatures closely 
+                                    related to the known actors' signatures).
 
-        kn_to_unk_comparision_df: pd.DataFrame - the pandas dataframe with the pairwise comparisons of each known to each candidate.
+        kn_to_unk_comparision_df:   pd.DataFrame - the pandas dataframe with the pairwise comparisons of each known to 
+                                    each candidate.
     """
 
     # convert the dfs with the transactions for the known and candidate pops into spectra dfs
-    know_actors_spectra_df = convert_to_spectral(know_actors_transactions_df, known_grouping_name, known_hs_column_for_pivotting)
-    candidate_pop_spectra_df = convert_to_spectral(candidate_pop_transactions_df, candidate_pop_grouping_name, candidate_hs_column_for_pivotting)
+    know_actors_spectra_df = convert_to_spectral(   know_actors_transactions_df, 
+                                                    known_grouping_name, 
+                                                    known_hs_column_for_pivotting)
 
-    # generate the 
+    candidate_pop_spectra_df = convert_to_spectral( candidate_pop_transactions_df, 
+                                                    candidate_pop_grouping_name, 
+                                                    candidate_hs_column_for_pivotting)
+
     known_to_aca_comparison_df = hs_spectra_comparator(know_actors_transactions_df,
                                                        candidate_pop_transactions_df,
                                                        know_actors_spectra_df,
