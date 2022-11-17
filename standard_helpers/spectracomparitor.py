@@ -51,8 +51,8 @@ def hs_spectra_comparator(know_actors_transactions_df: pd.DataFrame,
                           known_actors_spectra_df: pd.DataFrame, 
                           candidate_pop_spectra_df: pd.DataFrame,
                           known_grouping_name: str,
-                          candidate_pop_grouping_name: str
-                          ) -> pd.DataFrame:
+                          candidate_pop_grouping_name: str,
+) -> pd.DataFrame:
     """
     This function performs a pairwise cosine similarity comparison and spectral identify of the vectors of HS spectra
     from a target population to a candidate population. The function then adds additional statistics to output a 
@@ -219,8 +219,8 @@ def comparator_func_train(know_actors_transactions_df: pd.DataFrame,
                           known_grouping_name: str,
                           candidate_pop_grouping_name: str,
                           known_hs_column_for_pivotting: str,
-                          candidate_hs_column_for_pivotting: str
-                         ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+                          candidate_hs_column_for_pivotting: str,
+) -> "tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]":
     """
     This function stitches together all the other functions so you can start with two dfs (one each for the transactions 
     of the known actors and candidate population) and get the spectra dataframes plus the output of the 
