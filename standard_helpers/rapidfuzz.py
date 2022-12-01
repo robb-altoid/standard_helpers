@@ -46,6 +46,9 @@ def fuzzy_name_matching(input_df: pd.DataFrame, company_name_col: str, company_c
     # drop all other columns from the input_df
     input_df = input_df[[company_name_col,company_canon_id_col]]
 
+    # convert the company_name_col to lowercase - don't care about capitalization differences but Levenstein does
+    input_df['company_name_col'] = input_df['company_name_col'].str.lower()
+
     # create a cross join (cartesian product) so that every name is compared against every other name
     cross_names_df = input_df.merge(input_df, how='cross')
 
