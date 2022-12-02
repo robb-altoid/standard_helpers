@@ -4,10 +4,10 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name='standard_helpers',
-    version='0.0.4',
+    version='0.1.0',
     author='Robb Dunlap',
     author_email='robb@altana.ai',
-    description='databricks quick query method plus swagger api v2 access functions',
+    description='databricks quick query method plus swagger api v3 access functions',
     long_description=long_description,
     long_description_content_type="text/markdown",
     url='https://github.com/robb-altoid/standard_helpers',
