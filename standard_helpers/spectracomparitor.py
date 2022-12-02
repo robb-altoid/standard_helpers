@@ -114,14 +114,14 @@ def hs_spectra_comparator(know_actors_transactions_df: pd.DataFrame,
             except NameError:
                 pass
             transfer_df = pd.DataFrame(columns=combined_cols_lst)
-            transfer_df = transfer_df.append(row)  
-            transfer_df = transfer_df.append(row2)
+            transfer_df = pd.concat([transfer_df,row])
+            transfer_df = pd.concat([transfer_df,row2])
             transfer_df = transfer_df.fillna(0)
             # cos_sim returns a matrix. the [0,1] enables gathering the 2nd value in the first array. 
             # it's the same thing as doing "matrix[0][1]"
             score = cosine_similarity(transfer_df)[0,1]
-            transfer_dict = {'left_facility':ind,'right_facility':ind2, 'cos_sim':score}
-            kn_to_unk_comparision_df = kn_to_unk_comparision_df.append(transfer_dict, ignore_index=True)
+            transfer_dict = {'left_facility':[ind],'right_facility':[ind2], 'cos_sim':[score]}
+            kn_to_unk_comparision_df = pd.concat([kn_to_unk_comparision_df, pd.DataFrame(transfer_dict)])
    
     
     # add the count of transactions
@@ -230,15 +230,12 @@ def comparator_func_train(know_actors_transactions_df: pd.DataFrame,
         know_actors_transactions_df:    pd.DataFrame - a pandas dataframe that contains all of the known actors'  
                                         transactions from either akd21.fste or d.tt. The df must contain a column of hs 
                                         codes for comparsion (this should be a substring of the hs_code column in the db
-                                        to ensure that they are all the same lenght - this isn't true yet because I 
-                                        haven't integrated the "convert_to _spectral" function into this function).
+                                        to ensure that they are all the same length).
             
         candidate_pop_transactions_df:  pd.DataFrame - a pandas dataframe that contains all of the candidate   
                                         population's transactions from either akd21.fste or d.tt. The df must contain a
                                         column of hs codes for comparsion (this should be a substring of the hs_code 
-                                        column in the db to ensure that they are all the same lenght - this isn't true 
-                                        yet because I haven't integrated the "convert_to_spectral" function into this 
-                                        function).
+                                        column in the db to ensure that they are all the same length).
 
         known_grouping_name:    str - name of the column in know_actors_transactions_df that is either the company name
                                 or created composite (can be either sender or receiver but both this and 
