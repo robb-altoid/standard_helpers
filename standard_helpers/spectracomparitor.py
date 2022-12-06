@@ -25,11 +25,12 @@ def convert_to_spectral(input_df: pd.DataFrame,
                         -   counting_column: a column that's guaranteed to have data in it so that it can be counted, 
                             such as "transaction_id" in either akd2.fste or d.tt
 
-        pov_name_column:    The name of the column that will become the rows in the pivot_df
+        pov_name_column:    The name of the column that will become the rows in the pivot_df, e.g., "group_name"
 
-        pivot_column:       The name of the column whose values will become the row names in the pivot_df
+        pivot_column:       The name of the column whose values will become the row names in the pivot_df, e.g., "hs2"
 
-        counting_column:    The column that will be counted to generate the number of transactions in each HS category
+        counting_column:    The column that will be counted to generate the number of transactions in each HS category,
+                            e.g., "transaction_id"
 
     Returns:
         pivot_df:   The spectral data for each company with HS categories as columns and company names as the row 
