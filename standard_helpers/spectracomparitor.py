@@ -76,11 +76,13 @@ def hs_spectra_comparator(know_actors_transactions_df: pd.DataFrame,
                                         integrated the "convert_to_spectral" function into this function).
 
         known_actors_spectra_df:    a pandas dataframe of the hs spectra of the known population (of known bad actors for 
-                                    example).
+                                    example). The column names are the hs codes (hs2 for example) and must be INT type,
+                                    not FP.
 
         candidate_pop_spectra_df:   a pandas dataframe of the hs spectra of the target population (the population where
                                     you looking to see if any of the members have signatures closely related to the 
-                                    known actors' signatures).
+                                    known actors' signatures). The column names are the hs codes (hs2 for example) and 
+                                    must be INT type, not FP.
 
         known_grouping_name:    name of the column in know_actors_transactions_df that is either the company name or 
                                 created composite (can be either sender or receiver but both this and 
@@ -97,9 +99,7 @@ def hs_spectra_comparator(know_actors_transactions_df: pd.DataFrame,
     # will use a transfer_df to hold the two spectra that will be compared. need a set of the hs2 columns from both spectra
     # to create the transfer_df each time 
     kn_cols_lst = known_actors_spectra_df.columns.tolist()
-    kn_cols_lst = [int(x) for x in kn_cols_lst]
     unk_cols_lst = candidate_pop_spectra_df.columns.tolist()
-    unk_cols_lst = [int(x) for x in unk_cols_lst]
     kn_cols_lst.extend(unk_cols_lst)
     combined_cols_lst = list(set(kn_cols_lst))
     combined_cols_lst.sort()
@@ -124,9 +124,8 @@ def hs_spectra_comparator(know_actors_transactions_df: pd.DataFrame,
             # it's the same thing as doing "matrix[0][1]"
             score = cosine_similarity(transfer_df)[0,1]
             transfer_dict = {'left_facility':[i1],'right_facility':[i2], 'cos_sim':[score]}
-            kn_to_unk_comparision_df = pd.concat([kn_to_unk_comparision_df, pd.DataFrame(transfer_dict)])
-   
-    
+            kn_to_unk_comparision_df = pd.concat([kn_to_unk_comparision_df, pd.DataFrame(transfer_dict)], ignore_index=True)
+
     # add the count of transactions
     ## create dictionary of the sum of transactions for each company from the original spectra dfs
     unk_to_rur1_sum_trans_dict = candidate_pop_spectra_df.sum(axis=1).to_dict()
