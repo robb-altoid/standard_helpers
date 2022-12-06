@@ -4,7 +4,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name='standard_helpers',
-    version='0.1.0',
+    version='0.1.1',
     author='Robb Dunlap',
     author_email='robb@altana.ai',
     description='databricks quick query method plus swagger api v3 access functions',
