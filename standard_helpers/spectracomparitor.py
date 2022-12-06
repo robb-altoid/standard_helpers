@@ -97,7 +97,9 @@ def hs_spectra_comparator(know_actors_transactions_df: pd.DataFrame,
     # will use a transfer_df to hold the two spectra that will be compared. need a set of the hs2 columns from both spectra
     # to create the transfer_df each time 
     kn_cols_lst = known_actors_spectra_df.columns.tolist()
+    kn_cols_lst = [int(x) for x in kn_cols_lst]
     unk_cols_lst = candidate_pop_spectra_df.columns.tolist()
+    unk_cols_lst = [int(x) for x in unk_cols_lst]
     kn_cols_lst.extend(unk_cols_lst)
     combined_cols_lst = list(set(kn_cols_lst))
     combined_cols_lst.sort()
@@ -107,21 +109,21 @@ def hs_spectra_comparator(know_actors_transactions_df: pd.DataFrame,
 
     # loop through each row of the spectra of the known t0 companies and compare it to each row
     # of the unknown t0 companies
-    i = 0
-    for ind,row in known_actors_spectra_df.iterrows():
-        for ind2,row2 in candidate_pop_spectra_df.iterrows():
+    # i = 0
+    for i1,row in known_actors_spectra_df.iterrows():
+        for i2,row2 in candidate_pop_spectra_df.iterrows():
             try:
                 del transfer_df
             except NameError:
                 pass
             transfer_df = pd.DataFrame(columns=combined_cols_lst)
-            transfer_df = pd.concat([transfer_df,row])
-            transfer_df = pd.concat([transfer_df,row2])
+            transfer_df = pd.concat([transfer_df.T,row],axis=1).T
+            transfer_df = pd.concat([transfer_df.T,row2],axis=1).T
             transfer_df = transfer_df.fillna(0)
             # cos_sim returns a matrix. the [0,1] enables gathering the 2nd value in the first array. 
             # it's the same thing as doing "matrix[0][1]"
             score = cosine_similarity(transfer_df)[0,1]
-            transfer_dict = {'left_facility':[ind],'right_facility':[ind2], 'cos_sim':[score]}
+            transfer_dict = {'left_facility':[i1],'right_facility':[i2], 'cos_sim':[score]}
             kn_to_unk_comparision_df = pd.concat([kn_to_unk_comparision_df, pd.DataFrame(transfer_dict)])
    
     
@@ -274,7 +276,7 @@ def comparator_func_train(know_actors_transactions_df: pd.DataFrame,
                                                     candidate_pop_grouping_name, 
                                                     candidate_hs_column_for_pivotting)
 
-    known_to_aca_comparison_df = hs_spectra_comparator(know_actors_transactions_df,
+    known_to_unk_comparison_df = hs_spectra_comparator(know_actors_transactions_df,
                                                        candidate_pop_transactions_df,
                                                        know_actors_spectra_df,
                                                        candidate_pop_spectra_df,
@@ -282,4 +284,4 @@ def comparator_func_train(know_actors_transactions_df: pd.DataFrame,
                                                        candidate_pop_grouping_name                              
                                                       )
 
-    return (know_actors_spectra_df, candidate_pop_spectra_df, known_to_aca_comparison_df)
+    return (know_actors_spectra_df, candidate_pop_spectra_df, known_to_unk_comparison_df)
