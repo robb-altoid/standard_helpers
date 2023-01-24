@@ -140,7 +140,7 @@ def convert_serveless_query_to_pddf(input_query_result: list):
 
 def convert_pdf_to_db_tbl(conn_info, db_name, project_abbrv, tbl_unique_name, pdf):
     """ 
-    converts a pandas dataframe into a spark dataframe and then it as a table in the specified schema (db). 
+    converts a pandas dataframe into a spark dataframe and then to a table in the specified schema (db). 
     drops the previous version of the table if it already exists before saving the new data. prints out a 
     completion message if the operation is successful
 
