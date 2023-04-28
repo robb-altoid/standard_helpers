@@ -495,7 +495,7 @@ class BaseAtlasAPI:
                             "accept": "application/json",
                             "Content-Type": "application/json",
                         })
-        response = requests.post(url=f"{self.host_name}/search/company", headers=headers, data=json.dumps(body_post_search_company))
+        response = requests.post(url=f"{self.host_name}/search/company?page=0&page_size=100", headers=headers, data=json.dumps(body_post_search_company))
         return response.json()
 
 
